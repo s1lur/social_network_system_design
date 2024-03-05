@@ -67,15 +67,15 @@
 ```
 Total requests per user per day = 1 + 5 + 1 + 100 + 250 = 357
 RPS = 10 000 000 * 357 / 86 400 ≈ 41 320
-Written data per user per day = 2МБ * 0.0767 (пост) + 224Б * 3 (комментарий) + 16Б * 2 (лайк) + 16Б * 1 (подписка) + 124Б * 100 (сообщение) ≈ 154КБ
-Needed write speed = 154КБ * 10 000 000 / 86400 ≈ 17.8 МБ/с
+Written data per user per day = 2МБ * 0.0767 (пост) ≈ 153КБ
+Needed write speed = 153КБ * 10 000 000 / 86400 ≈ 17.7 МБ/с
 Read data per user per day = 2МБ * 100 (пост) = 200МБ
 Needed read speed = 200МБ * 10 000 000 / 86400 ≈ 23.2 ГБ/с
-Total written data in first year = 154КБ * 5 420 000 * 365 (активность) + 401КБ * 25 000 000 (данные пользователей) ≈ 314ТБ
-Total written data in next year = 154КБ * 10 000 000 * 365 ≈ 562ТБ
-Needed disks (6TB) for storage in first year = 314ТБ / 6ТБ = 53
-Needed disks (6 TB) for storage in next year = 562ТБ / 6ТБ = 94
+Total written data in first year = 153КБ * 5 420 000 * 365 (активность) ≈ 303ТБ
+Total written data in next year = 153КБ * 10 000 000 * 365 ≈ 558ТБ
+Needed disks (6TB) for storage in first year = 303ТБ / 6ТБ = 51
+Needed disks (6 TB) for storage in next year = 562ТБ / 6ТБ = 93
 Needed disks for read speed (HDD) = 23.2ГБ/с / 0.1ГБ/с = 232
 Needed disks for read speed (SSD (SATA)) = 23.2ГБ/с / 0.5ГБ/с = 47
 ```
-Итого берем 53 SSD (так как нам не хватит скорости чтения у HDD) на первый год, и 94 на следующий (без учета последующего роста).
+Итого берем 51 SSD (так как нам не хватит скорости чтения у HDD) на первый год, и 93 на следующий (без учета последующего роста).
