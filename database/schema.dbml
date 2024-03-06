@@ -1,0 +1,88 @@
+Table post {
+  id integer [primary key]
+  location_id integer
+  author_id integer
+  body text [note: 'Содержание поста']
+  created_at datetime
+}
+
+Table location {
+  id integer [primary key]
+  name varchar
+  coords varchar
+}
+
+Table user {
+  id integer [primary key]
+  name varchar
+  descrption text
+  avatar_id integer
+  phone_number varchar
+  email varchar
+  created_at datetime
+}
+
+Table comment {
+  id integer [primary key]
+  author_id integer
+  post_id integer
+  body text
+  created_at datetime
+}
+
+Table message {
+  id integer [primary key]
+  from_id integer
+  to_id integer
+  body text
+  created_at datetime
+}
+
+Table like {
+  id integer [primary key]
+  user_id integer
+  post_id integer
+}
+
+Table subscription {
+  id integer [primary key]
+  subscriber_id integer
+  subscribed_to_id integer
+}
+
+Table photo {
+  id integer [primary key]
+  link varchar
+}
+
+Table post_photos {
+  id integer [primary key]
+  post_id integer
+  photo_id integer
+}
+
+Ref: post.author_id > user.id
+
+Ref: post.location_id > location.id
+
+Ref: comment.author_id > user.id
+
+Ref: comment.post_id > post.id
+
+Ref: message.from_id > user.id
+
+Ref: message.to_id > user.id
+
+Ref: like.user_id > user.id
+
+Ref: like.post_id > post.id
+
+Ref: subscription.subscribed_to_id > user.id
+
+Ref: subscription.subscriber_id > user.id
+
+Ref: user.avatar_id > photo.id
+
+Ref: post_photos.post_id > post.id
+
+Ref: post_photos.photo_id > photo.id
