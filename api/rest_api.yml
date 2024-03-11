@@ -131,6 +131,7 @@ paths:
           description: Неверный формат входных данных
         '422':
           description: Ошибка валидации
+  /posts:
     get:
       tags:
         - post
@@ -190,7 +191,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Post'
-  /post/like/{id}:
+  /post/{id}/like:
     post:
       tags:
         - post
@@ -217,7 +218,7 @@ paths:
           description: Неверный ID
         '404':
           description: Пост не найден
-  /post/comment/{id}:
+  /post/{id}/comment:
     post:
       tags:
         - post
@@ -374,7 +375,7 @@ paths:
           description: Неверный формат входных данных
         '422':
           description: Ошибка валидации
-  /user/subscribe/{id}:
+  /user/{id}/subscription:
     post:
       tags:
         - user
@@ -403,8 +404,7 @@ paths:
           description: Пользователь не найден
         '422':
           description: Подписка уже оформлена
-  /user/unsubscribe/{id}:
-    post:
+    delete:
       tags:
         - user
       summary: Отписаться от пользователя

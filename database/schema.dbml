@@ -9,7 +9,8 @@ Table post {
 Table location {
   id integer [primary key]
   name varchar
-  coords varchar
+  longitude decimal
+  latitude decimal
 }
 
 Table user {
@@ -27,14 +28,16 @@ Table comment {
   author_id integer
   post_id integer
   body text
+  replied_to_id integer
   created_at datetime
 }
 
 Table message {
-  id integer [primary key]
+  id uuid [primary key]
   from_id integer
   to_id integer
   body text
+  is_read boolean
   created_at datetime
 }
 
