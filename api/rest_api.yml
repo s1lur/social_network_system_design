@@ -1,0 +1,736 @@
+openapi: 3.0.3
+info:
+  title: API социальной сети для путешествеников
+  description: |-
+    Данная спецификация описывает API социальной сети для путешестенников, функциональные требования которой представлены в README.
+    Задание выполнено в рамках [курса по System Design](https://balun.courses/courses/system_design).
+  contact:
+    email: kma03.12.2002@gmail.com
+  version: 1.0.0
+tags:
+  - name: post
+    description: Действия с постами (CRUD и реакции)
+  - name: chat
+    description: Действия в чате
+  - name: user
+    description: Действия с пользователями
+paths:
+  /post/{id}:
+    put:
+      parameters:
+      - name: id
+        in: path
+        description: ID поста
+        required: true
+        schema:
+          type: integer
+          format: int64
+          example: 1
+      tags:
+        - post
+      summary: Отредактировать существующий пост
+      description: Отредактировать существующий пост по ID
+      operationId: updatePost
+      requestBody:
+        description: Обновить существующий пост
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Post'
+        required: true
+      responses:
+        '200':
+          description: Успешно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'          
+        '400':
+          description: Неверный ID
+        '404':
+          description: Пост не найден
+        '422':
+          description: Ошибка валидации
+    get:
+      parameters:
+      - name: id
+        in: path
+        description: ID поста
+        required: true
+        schema:
+          type: integer
+          format: int64
+          example: 1
+      tags:
+        - post
+      summary: Получить пост
+      description: Получить пост по ID
+      operationId: getPost
+      responses:
+        '200':
+          description: Пост найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '400':
+          description: Неверный ID
+        '404':
+          description: Пост не найден
+    delete:
+      parameters:
+      - name: id
+        in: path
+        description: ID поста
+        required: true
+        schema:
+          type: integer
+          format: int64
+          example: 1
+      tags:
+        - post
+      summary: Удалить пост
+      description: Удалить пост по ID
+      operationId: deletePost
+      responses:
+        '204':
+          description: Пост успешно удален
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+        '400':
+          description: Неверный ID
+        '404':
+          description: Пост не найден
+  /post:
+    post:
+      tags:
+        - post
+      summary: Создать новый пост
+      description: Создать новый пост
+      operationId: addPost
+      requestBody:
+        description: Создать новый пост
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Post'
+        required: true
+      responses:
+        '201':
+          description: Пост успешно создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'          
+        '400':
+          description: Неверный формат входных данных
+        '422':
+          description: Ошибка валидации
+  /posts:
+    get:
+      tags:
+        - post
+      summary: Получить список постов
+      description: Получить отфильтрованный пагинированный список постов
+      operationId: listPosts
+      parameters:
+      - name: limit
+        in: query
+        description: Количество постов
+        required: false
+        schema:
+          type: integer
+          format: int64
+          example: 10
+          default: 0
+      - name: offset
+        in: query
+        description: С какого поста начать
+        required: false
+        schema:
+          type: integer
+          format: int64
+          example: 0
+          default: 0
+      - name: onlyFromSubscriptions
+        in: query
+        description: Отображать только посты тех, на кого подписан
+        required: false
+        schema:
+          type: integer
+          format: int64
+          example: true
+          default: false
+      - name: locationId
+        in: query
+        description: Из какой локации отображать
+        required: false
+        schema:
+          type: integer
+          format: int64
+          example: 10
+      - name: userId
+        in: query
+        description: Посты какого пользователя показывать
+        required: false
+        schema:
+          type: integer
+          format: int64
+          example: 10
+      responses:
+        '200':
+          description: Успешно
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Post'
+  /post/{id}/like:
+    post:
+      tags:
+        - post
+      summary: Лайкнуть пост
+      description: Лайкнуть пост
+      operationId: likePost
+      parameters:
+      - name: id
+        in: path
+        description: ID поста
+        required: true
+        schema:
+          type: integer
+          format: int64
+          example: 10
+      responses:
+        '200':
+          description: Лайк поставлен успешно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '400':
+          description: Неверный ID
+        '404':
+          description: Пост не найден
+  /post/{id}/comment:
+    post:
+      tags:
+        - post
+      summary: Оставить комментарий под постом
+      description: Оставить комментарий под постом
+      operationId: commentPost
+      parameters:
+      - name: id
+        in: path
+        description: ID поста
+        required: true
+        schema:
+          type: integer
+          format: int64
+          example: 10
+      requestBody:
+        description: Оставить комментарий под постом
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                body:
+                  type: string
+        required: true
+      responses:
+        '200':
+          description: Комментарий создан успешно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        '400':
+          description: Неверный ID
+        '404':
+          description: Пост не найден
+        '422':
+          description: Ошибка валидации
+  /user/{id}:
+    get:
+      tags:
+        - user
+      summary: Получить пользователя по ID
+      description: Получить пользователя по ID
+      operationId: getUser
+      parameters:
+      - name: id
+        in: path
+        description: ID пользователя
+        required: true
+        schema:
+          type: integer
+          format: int64
+          example: 10
+      responses:
+        '200':
+          description: Успешно
+          content:
+            application/json:
+              schema:
+                type: object
+                items:
+                  $ref: '#/components/schemas/User'          
+        '400':
+          description: Неверный ID
+        '404':
+          description: Пользователь не найден
+    put:
+      tags:
+        - user
+      summary: Обновить пользователя
+      description: Обновить информацию о пользователе
+      operationId: updateUser
+      parameters:
+      - name: id
+        in: path
+        description: ID пользователя
+        required: true
+        schema:
+          type: integer
+          format: int64
+          example: 10
+      requestBody:
+        description: Создать нового пользователя
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        '200':
+          description: Пользователь успешно отредактирован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'   
+        '400':
+          description: Неверный формат входных данных
+        '404':
+          description: Пользователь не найден
+        '422':
+          description: Ошибка валидации
+    delete:
+      parameters:
+      - name: id
+        in: path
+        description: ID пользователя
+        required: true
+        schema:
+          type: integer
+          format: int64
+          example: 1
+      tags:
+        - user
+      summary: Удалить пользователя
+      description: Удалить пользователя по ID
+      operationId: deleteUser
+      responses:
+        '204':
+          description: Пользователь успешно удален
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+        '400':
+          description: Неверный ID
+        '404':
+          description: Пользователь не найден
+  /user:
+    post:
+      tags:
+        - user
+      summary: Создать нового пользователя
+      description: Создать нового пользователя (регистрация)
+      operationId: createUser
+      requestBody:
+        description: Создать нового пользователя
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        '201':
+          description: Пользователь успешно создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'          
+        '400':
+          description: Неверный формат входных данных
+        '422':
+          description: Ошибка валидации
+  /user/{id}/subscription:
+    post:
+      tags:
+        - user
+      summary: Подписаться на пользователя
+      description: Подписаться на пользователя
+      operationId: subscribe
+      parameters:
+      - name: id
+        in: path
+        description: ID пользователя
+        required: true
+        schema:
+          type: integer
+          format: int64
+          example: 1
+      responses:
+        '200':
+          description: Подписка успешно оформлена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'          
+        '400':
+          description: Неверный ID
+        '404':
+          description: Пользователь не найден
+        '422':
+          description: Подписка уже оформлена
+    delete:
+      tags:
+        - user
+      summary: Отписаться от пользователя
+      description: Отписаться от пользователя
+      operationId: unsubscribe
+      parameters:
+      - name: id
+        in: path
+        description: ID пользователя
+        required: true
+        schema:
+          type: integer
+          format: int64
+          example: 1
+      responses:
+        '200':
+          description: Подписка успешно отменена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'          
+        '400':
+          description: Неверный формат ID
+        '404':
+          description: Пользователь не найден
+        '422':
+          description: Подписка не была оформлена
+  /chat/{id}:
+    post:
+      tags:
+        - chat
+      summary: Отправить сообщение в чате
+      description: Отправить сообщение в чате
+      operationId: sendMessage
+      parameters:
+      - name: id
+        in: path
+        description: ID пользователя
+        required: true
+        schema:
+          type: integer
+          format: int64
+          example: 1
+      requestBody:
+        description: Отправить сообщение
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                body:
+                  type: string
+        required: true
+      responses:
+        '200':
+          description: Сообщение успешно отправлено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        '400':
+          description: Неверный формат входных данных
+        '404':
+          description: Пользователь не найден
+        '422':
+          description: Ошибка валидации
+    get:
+      tags:
+        - chat
+      summary: Получить список сообщений
+      description: Получить список сообщений в чате с пользователем по ID
+      operationId: getMessages
+      parameters:
+      - name: id
+        in: path
+        description: ID пользователя
+        required: true
+        schema:
+          type: integer
+          format: int64
+          example: 1
+      - name: limit
+        in: query
+        description: Сколько сообщений получить
+        required: false
+        schema:
+          type: integer
+          format: int64
+          example: 10
+      - name: offset
+        in: query
+        description: С какого сообщения отдавать
+        required: false
+        schema:
+          type: integer
+          format: int64
+          example: 0
+      responses:
+        '200':
+          description: Успешно
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Message'
+        '400':
+          description: Неверный формат входных данных
+        '404':
+          description: Пользователь не найден
+        '422':
+          description: Ошибка валидации
+  /chat/message/{id}:
+    put:
+      tags:
+        - chat
+      summary: Редактировать сообщение
+      description: Отредактировать сообщение по ID
+      operationId: editMessage
+      parameters:
+      - name: id
+        in: path
+        description: ID сообщения
+        required: true
+        schema:
+          type: integer
+          format: int64
+          example: 1
+      requestBody:
+        description: Отредактировать сообщение
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                body:
+                  type: string
+        required: true
+      responses:
+        '200':
+          description: Сообщение успешно отредактировано
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        '400':
+          description: Неверный формат входных данных
+        '404':
+          description: Сообщение не найдено
+        '422':
+          description: Ошибка валидации
+    delete:
+      tags:
+        - chat
+      summary: Удалить сообщение
+      description: Удалить сообщение по ID
+      operationId: deleteMessage
+      parameters:
+      - name: id
+        in: path
+        description: ID сообщения
+        required: true
+        schema:
+          type: integer
+          format: int64
+          example: 1
+      responses:
+        '204':
+          description: Сообщение успешно удалено
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                    example: true
+        '400':
+          description: Неверный формат входных данных
+        '404':
+          description: Сообщение не найдено
+        '422':
+          description: Ошибка валидации
+components:
+  schemas:
+    Post:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        photoIds:
+          type: array
+          format: array
+          items:
+            type: integer
+            format: int64
+          example: [1, 2, 3]
+        location:
+          type: object
+          $ref: '#/components/schemas/Location'
+        likedByIds:
+          type: array
+          format: array
+          items:
+            type: integer
+            format: int64
+          example: [3, 5, 8]
+        date:
+          type: string
+          format: date-time
+    Location:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 12
+        name:
+          type: string
+          example: Novosibirsk
+        coordinates:
+          type: string
+          format: coordinates
+          example: '55.0415,82.9346'
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 2
+        name:
+          type: string
+          example: 'Ivanov Ivan Ivanovich'
+        username: 
+          type: string
+          example: 'ivan123'
+        description:
+          type: string
+          example: 'Just like to see the world'
+        subscriberIds:
+          type: array
+          format: array
+          items:
+            type: integer
+            format: int64
+          example: [1, 3, 4]
+        subscriptionIds:
+          type: array
+          format: array
+          items:
+            type: integer
+            format: int64
+          example: [5, 6, 7]
+        avatarId:
+          type: integer
+          format: int64
+          example: 3
+    Comment:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        postId: 
+          type: integer
+          format: int64
+          example: 4
+        authorId:
+          type: integer
+          format: int64
+          example: 8
+        body:
+          type: string
+          example: 'Cool photo!'
+        date:
+          type: string
+          format: date-time
+    Message:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        fromId:
+          type: integer
+          format: int64
+          example: 5
+        toId:
+          type: integer
+          format: int64
+          example: 8
+        body:
+          type: string
+          example: 'hello'
+        date:
+          type: string
+          format: date-time
+    ApiResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        type:
+          type: string
+        message:
+          type: string
+      xml:
+        name: '##default'
+  requestBodies:
+    Post:
+      description: Post object that is being posted to the feed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Post'
+    UserArray:
+      description: List of user object
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/User'
